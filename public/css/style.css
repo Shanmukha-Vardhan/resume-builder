@@ -3,108 +3,237 @@
     padding: 0;
     box-sizing: border-box;
   }
+  
   body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
     color: #333;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
+  
+  /* --- Navigation --- */
   nav {
     background: #333;
     color: #fff;
-    padding: 1rem;
+    padding: 0.5rem 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 100%; /* Ensure full width */
+    margin: 0; /* Remove any default margin */
   }
+  
   nav ul {
     list-style: none;
     display: flex;
     justify-content: center;
+    max-width: 1400px;
+    margin: 0 auto;
   }
+  
   nav ul li {
     margin: 0 1rem;
   }
+  
   nav ul li a {
     color: #fff;
     text-decoration: none;
+    padding: 0.8rem 1rem;
+    display: block;
+    transition: background-color 0.2s ease;
   }
+  
+  nav ul li a:hover {
+    background-color: #555;
+  }
+  
+  /* --- Main Container --- */
   .container {
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 1400px;
+    margin: 2rem auto;
     padding: 2rem;
+    background-color: #fff;
+    box-shadow: 0 0 15px rgba(0,0,0,0.07);
+    border-radius: 5px;
+    flex-grow: 1;
   }
+  
   h1 {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #333;
   }
+  
+  /* --- Builder Layout --- */
   .resume-builder {
     display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
+    gap: 3rem;
+    align-items: flex-start;
   }
+  
   #resume-form {
-    flex: 1;
-    min-width: 300px;
+    flex: 2.5; /* Increased from 2 to give more space */
+    min-width: 400px; /* Increased minimum width */
   }
+  
   #preview {
-    flex: 1;
-    min-width: 300px;
-    border: 1px solid #ccc;
-    padding: 1rem;
-    background: #f9f9f9;
-    max-height: 600px;
-    overflow-y: auto;
+    flex: 2; /* Increased from 1.5 to balance with form */
+    min-width: 900px; /* Increased minimum width */
+    border: 1px solid #ddd;
+    padding: 2rem; /* Increased padding for larger content area */
+    background: #fdfdfd;
+    border-radius: 4px;
+    position: sticky;
+    top: 20px;
+    align-self: flex-start;
   }
+  
+  #preview h2 {
+    font-size: 1.2em;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 4px;
+    margin-top: 1.2rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  #preview p, #preview ul {
+    line-height: 1.5;
+    margin-bottom: 0.8rem;
+  }
+  
+  #preview ul {
+    padding-left: 25px;
+  }
+  
+  #preview a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  #preview a:hover {
+    text-decoration: underline;
+  }
+  
+  /* --- Form Elements --- */
   fieldset {
-    border: 1px solid #ccc;
-    padding: 1rem;
-    margin-bottom: 1rem;
+    border: 1px solid #e0e0e0;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
   }
+  
   legend {
     font-weight: bold;
     padding: 0 0.5rem;
+    font-size: 1.1em;
+    color: #444;
   }
+  
+  /* Dynamic entry containers */
   .education-entry, .experience-entry, .project-entry, .skill-entry,
   .certification-entry, .language-entry, .interest-entry {
     margin-bottom: 1rem;
-    padding: 1rem;
-    background: #fff;
+    padding: 1.5rem;
+    background: #fafafa;
     border: 1px solid #eee;
+    border-radius: 4px;
+    overflow: hidden;
   }
+  
   label {
     font-weight: bold;
     display: block;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.35rem;
+    margin-top: 0.5rem;
+    color: #555;
   }
-  input, textarea {
+  
+  .remove-entry + label {
+    margin-top: 0;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="number"],
+  input[type="date"],
+  input[type="file"],
+  textarea {
     width: 100%;
-    padding: 0.5rem;
+    padding: 0.75rem;
     border: 1px solid #ccc;
     border-radius: 4px;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1em;
   }
+  
   textarea {
     resize: vertical;
+    min-height: 80px;
   }
+  
   button, #preview-btn {
-    padding: 0.75rem;
+    padding: 0.75rem 1.25rem;
     background: #333;
     color: #fff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     margin-top: 0.5rem;
+    transition: background-color 0.2s ease;
+    font-size: 1em;
   }
-  button:hover, #preview-btn:hover {
+  
+  #preview-btn {
+    width: 100%;
+    margin-top: 1.5rem;
+    background-color: #007bff;
+  }
+  
+  #preview-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  button:hover {
     background: #555;
   }
+  
   .remove-entry {
     background: #dc3545;
+    float: right;
+    margin-left: 10px;
+    padding: 0.4rem 0.8rem;
+    margin-top: -5px;
   }
+  
   .remove-entry:hover {
     background: #c82333;
   }
+  
   [title] {
     cursor: help;
-    color: #007bff;
+    border-bottom: 1px dotted #777;
     margin-left: 0.25rem;
   }
+  
+  /* --- Responsive --- */
+  @media (max-width: 992px) {
+    .resume-builder {
+      flex-direction: column;
+      gap: 2rem;
+    }
+    #resume-form, #preview {
+      min-width: 100%;
+      flex: 1;
+    }
+    #preview {
+      position: static;
+      margin-top: 2rem;
+    }
+  }
+  
   @media (max-width: 768px) {
     nav ul {
       flex-direction: column;
@@ -115,11 +244,21 @@
     }
     .container {
       padding: 1rem;
+      max-width: 95%;
     }
-    .resume-builder {
-      flex-direction: column;
+    h1 {
+      font-size: 1.5em;
     }
-    #resume-form, #preview {
-      min-width: 100%;
+    fieldset, .education-entry, .experience-entry, .project-entry, .skill-entry,
+    .certification-entry, .language-entry, .interest-entry {
+      padding: 1rem;
+    }
+    #preview {
+      padding: 1rem;
+    }
+    button, #preview-btn, input, textarea {
+      padding: 0.6rem 1rem;
     }
   }
+
+  

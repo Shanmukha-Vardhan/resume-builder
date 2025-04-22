@@ -38,7 +38,7 @@
         <!-- Objective -->
         <fieldset>
           <legend>Objective</legend>
-          <label for="objective">Summary <span title="Write a brief professional Unofficial API for that too.</span></label>
+          <label for="objective">Summary <span title="Write a brief professional summary"></span></label>
           <textarea id="objective" name="objective" placeholder="e.g., Seeking a software engineering position..."></textarea>
         </fieldset>
 
@@ -141,7 +141,7 @@
           <button type="button" id="add-interest">Add Interest</button>
         </fieldset>
 
-        <button type="submit">Preview</button>
+        <button type="button" id="preview-btn">Preview</button>
       </form>
 
       <!-- Live Preview -->
@@ -150,27 +150,32 @@
         <div id="preview-content"></div>
       </div>
     </div>
-  </div>
+</div>
 
-  <script>
+<script>
     // Dynamic Add/Remove Functionality
     function addEntry(section, template) {
       const sectionEl = document.getElementById(`${section}-section`);
       const entries = sectionEl.querySelectorAll(`.${section}-entry`).length;
       const newEntry = document.createElement('div');
       newEntry.className = `${section}-entry`;
-      newEntry.innerHTML = template.replace(/-\d+/g, `-${entries}`);
-      sectionEl.insertBefore(newEntry, sectionEl.lastElementChild);
+      newEntry.innerHTML = template.replace(/-\d+/g, `-${entries}`).replace(/\[0\]/g, `[${entries}]`);
+      sectionEl.insertBefore(newEntry, sectionEl.querySelector('button')?.previousElementSibling || sectionEl.lastElementChild);
+      console.log(`Added ${section} entry #${entries + 1}`); // Debug
     }
-
+  
     function removeEntry(event) {
-      const section = event.target.dataset.section;
-      const entry = event.target.parentElement;
-      if (document.querySelectorAll(`.${section}-entry`).length > 1) {
-        entry.remove();
+      const button = event.target;
+      if (button.classList.contains('remove-entry')) {
+        const section = button.dataset.section;
+        const entry = button.closest(`.${section}-entry`);
+        if (entry && document.querySelectorAll(`.${section}-entry`).length > 1) {
+          entry.remove();
+          console.log(`Removed ${section} entry`);
+        }
       }
     }
-
+  
     // Templates for each section
     const educationTemplate = `
       <label for="institution-0">Institution *</label>
@@ -183,7 +188,7 @@
       <input type="number" id="cgpa-0" name="education[0][cgpa]" step="0.01" placeholder="e.g., 3.8">
       <button type="button" class="remove-entry" data-section="education">Remove</button>
     `;
-
+  
     const experienceTemplate = `
       <label for="company-0">Company *</label>
       <input type="text" id="company-0" name="experience[0][company]" placeholder="e.g., ABC Corp" required>
@@ -195,7 +200,7 @@
       <textarea id="responsibilities-0" name="experience[0][responsibilities]" placeholder="e.g., Developed web applications..."></textarea>
       <button type="button" class="remove-entry" data-section="experience">Remove</button>
     `;
-
+  
     const projectTemplate = `
       <label for="project-title-0">Title *</label>
       <input type="text" id="project-title-0" name="projects[0][title]" placeholder="e.g., E-commerce Platform" required>
@@ -207,13 +212,13 @@
       <input type="url" id="project-link-0" name="projects[0][link]" placeholder="e.g., https://github.com/...">
       <button type="button" class="remove-entry" data-section="projects">Remove</button>
     `;
-
+  
     const skillTemplate = `
       <label for="skill-0">Skill *</label>
       <input type="text" id="skill-0" name="skills[0]" placeholder="e.g., JavaScript" required>
       <button type="button" class="remove-entry" data-section="skills">Remove</button>
     `;
-
+  
     const certificationTemplate = `
       <label for="cert-title-0">Title *</label>
       <input type="text" id="cert-title-0" name="certifications[0][title]" placeholder="e.g., AWS Certified Developer" required>
@@ -223,172 +228,153 @@
       <input type="date" id="cert-date-0" name="certifications[0][date]">
       <button type="button" class="remove-entry" data-section="certifications">Remove</button>
     `;
-
+  
     const languageTemplate = `
       <label for="language-0">Language *</label>
       <input type="text" id="language-0" name="languages[0]" placeholder="e.g., English" required>
       <button type="button" class="remove-entry" data-section="languages">Remove</button>
     `;
-
+  
     const interestTemplate = `
       <label for="interest-0">Interest *</label>
       <input type="text" id="interest-0" name="interests[0]" placeholder="e.g., Hiking" required>
       <button type="button" class="remove-entry" data-section="interests">Remove</button>
     `;
-
-    // Event Listeners for Add Buttons
-    document.getElementById('add-education').addEventListener('click', () => addEntry('education', educationTemplate));
-    document.getElementById('add-experience').addEventListener('click', () => addEntry('experience', experienceTemplate));
-    document.getElementById('add-project').addEventListener('click', () => addEntry('projects', projectTemplate));
-    document.getElementById('add-skill').addEventListener('click', () => addEntry('skills', skillTemplate));
-    document.getElementById('add-certification').addEventListener('click', () => addEntry('certifications', certificationTemplate));
-    document.getElementById('add-language').addEventListener('click', () => addEntry('languages', languageTemplate));
-    document.getElementById('add-interest').addEventListener('click', () => addEntry('interests', interestTemplate));
-
-    // Event Delegation for Remove Buttons
-    document.querySelectorAll('.remove-entry').forEach(btn => {
-      btn.addEventListener('click', removeEntry);
-    });
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('remove-entry')) {
-        removeEntry(e);
-      }
-    });
-
-    // Live Preview
-    const form = document.getElementById('resume-form');
-    const previewContent = document.getElementById('preview-content');
-
-    form.addEventListener('input', () => {
-      const formData = new FormData(form);
-      let previewHtml = `
-        <h3>${formData.get('name') || 'Your Name'}</h3>
-        <p>${formData.get('email') || 'email@example.com'} | ${formData.get('phone') || 'Phone Number'} | 
-        ${formData.get('linkedin') || ''} | ${formData.get('github') || ''}</p>
-        ${formData.get('photo') ? '<p>Profile Photo: [Image]</p>' : ''}
-        <h4>Objective</h4>
-        <p>${formData.get('objective') || 'Your career objective...'}</p>
-      `;
-
-      // Education
-      const education = [];
-      formData.forEach((value, key) => {
-        if (key.startsWith('education')) {
-          const match = key.match(/education\[(\d+)\]\[(\w+)\]/);
-          if (match) {
-            const index = match[1];
-            const field = match[2];
-            education[index] = education[index] || {};
-            education[index][field] = value;
-          }
+  
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('add-education').addEventListener('click', () => addEntry('education', educationTemplate));
+      document.getElementById('add-experience').addEventListener('click', () => addEntry('experience', experienceTemplate));
+      document.getElementById('add-project').addEventListener('click', () => addEntry('projects', projectTemplate));
+      document.getElementById('add-skill').addEventListener('click', () => addEntry('skills', skillTemplate));
+      document.getElementById('add-certification').addEventListener('click', () => addEntry('certifications', certificationTemplate));
+      document.getElementById('add-language').addEventListener('click', () => addEntry('languages', languageTemplate));
+      document.getElementById('add-interest').addEventListener('click', () => addEntry('interests', interestTemplate));
+  
+      document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-entry')) {
+          removeEntry(e);
         }
       });
-      if (education.length > 0) {
-        previewHtml += '<h4>Education</h4>';
-        education.forEach((edu, i) => {
-          if (edu.institution) {
-            previewHtml += `
-              <p><strong>${edu.institution}</strong><br>
-              ${edu.degree || ''}, ${edu.year || ''}${edu.cgpa ? `, CGPA: ${edu.cgpa}` : ''}</p>
-            `;
-          }
-        });
-      }
-
-      // Experience
-      const experience = [];
-      formData.forEach((value, key) => {
-        if (key.startsWith('experience')) {
-          const match = key.match(/experience\[(\d+)\]\[(\w+)\]/);
-          if (match) {
-            const index = match[1];
-            const field = match[2];
-            experience[index] = experience[index] || {};
-            experience[index][field] = value;
-          }
+  
+      const form = document.getElementById('resume-form');
+      const previewContent = document.getElementById('preview-content');
+  
+      function updatePreview() {
+        const formData = new FormData(form);
+        let previewHtml = '';
+  
+        // Personal Info
+        const name = formData.get('name') || 'Your Name';
+        const email = formData.get('email') || '';
+        const phone = formData.get('phone') || '';
+        const linkedin = formData.get('linkedin') || '';
+        const github = formData.get('github') || '';
+        previewHtml += `
+          <h1>${name}</h1>
+          <p>${phone ? `+${phone} ` : ''}${email ? `${email} ` : ''}${linkedin ? linkedin : ''}${github ? ` ${github}` : ''}</p>
+        `;
+  
+        // Summary
+        const objective = formData.get('objective') || '';
+        if (objective) {
+          previewHtml += '<h2>SUMMARY</h2><p>' + objective + '</p>';
         }
-      });
-      if (experience.length > 0) {
-        previewHtml += '<h4>Experience</h4>';
-        experience.forEach((exp, i) => {
-          if (exp.company) {
-            previewHtml += `
-              <p><strong>${exp.company}</strong><br>
-              ${exp.role || ''}, ${exp.duration || ''}<br>
-              ${exp.responsibilities || ''}</p>
-            `;
-          }
-        });
-      }
-
-      // Projects
-      const projects = [];
-      formData.forEach((value, key) => {
-        if (key.startsWith('projects')) {
-          const match = key.match(/projects\[(\d+)\]\[(\w+)\]/);
-          if (match) {
-            const index = match[1];
-            const field = match[2];
-            projects[index] = projects[index] || {};
-            projects[index][field] = value;
-          }
+  
+        // Skills
+        const skills = formData.getAll('skills').filter(skill => skill && skill.trim());
+        if (skills.length > 0) {
+          previewHtml += '<h2>SKILLS</h2><ul><li>' + skills.join('</li><li>') + '</li></ul>';
         }
-      });
-      if (projects.length > 0) {
-        previewHtml += '<h4>Projects</h4>';
-        projects.forEach((proj, i) => {
-          if (proj.title) {
-            previewHtml += `
-              <p><strong>${proj.title}</strong><br>
-              ${proj.description || ''}<br>
-              Tech: ${proj.tech || ''}${proj.link ? `<br><a href="${proj.link}">GitHub</a>` : ''}</p>
-            `;
+  
+        // Experience
+        const experience = [];
+        formData.forEach((value, key) => {
+          if (key.startsWith('experience')) {
+            const match = key.match(/experience\[(\d+)\]\[(\w+)\]/);
+            if (match) {
+              const index = match[1];
+              const field = match[2];
+              experience[index] = experience[index] || {};
+              experience[index][field] = value;
+            }
           }
         });
-      }
-
-      // Skills
-      const skills = formData.getAll('skills').filter(skill => skill);
-      if (skills.length > 0) {
-        previewHtml += '<h4>Skills</h4><p>' + skills.join(', ') + '</p>';
-      }
-
-      // Certifications
-      const certifications = [];
-      formData.forEach((value, key) => {
-        if (key.startsWith('certifications')) {
-          const match = key.match(/certifications\[(\d+)\]\[(\w+)\]/);
-          if (match) {
-            const index = match[1];
-            const field = match[2];
-            certifications[index] = certifications[index] || {};
-            certifications[index][field] = value;
-          }
+        if (experience.some(exp => exp && exp.company)) {
+          previewHtml += '<h2>EXPERIENCE</h2>';
+          experience.forEach((exp) => {
+            if (exp && exp.company) {
+              previewHtml += `<p><strong>${exp.company}</strong> | ${exp.role || ''}<br>${exp.duration || ''}<br>${exp.responsibilities || ''}</p>`;
+            }
+          });
         }
-      });
-      if (certifications.length > 0) {
-        previewHtml += '<h4>Certifications</h4>';
-        certifications.forEach((cert, i) => {
-          if (cert.title) {
-            previewHtml += `
-              <p><strong>${cert.title}</strong><br>
-              ${cert.issuer || ''}, ${cert.date || ''}</p>
-            `;
+  
+        // Projects
+        const projects = [];
+        formData.forEach((value, key) => {
+          if (key.startsWith('projects')) {
+            const match = key.match(/projects\[(\d+)\]\[(\w+)\]/);
+            if (match) {
+              const index = match[1];
+              const field = match[2];
+              projects[index] = projects[index] || {};
+              projects[index][field] = value;
+            }
           }
         });
+        if (projects.some(proj => proj && proj.title)) {
+          previewHtml += '<h2>PROJECTS</h2>';
+          projects.forEach((proj) => {
+            if (proj && proj.title) {
+              previewHtml += `<p><strong>${proj.title}</strong><br>${proj.description || ''}<br>Tech: ${proj.tech || ''}${proj.link ? ` GitHub: ${proj.link}` : ''}</p>`;
+            }
+          });
+        }
+  
+        // Certifications
+        const certifications = [];
+        formData.forEach((value, key) => {
+          if (key.startsWith('certifications')) {
+            const match = key.match(/certifications\[(\d+)\]\[(\w+)\]/);
+            if (match) {
+              const index = match[1];
+              const field = match[2];
+              certifications[index] = certifications[index] || {};
+              certifications[index][field] = value;
+            }
+          }
+        });
+        if (certifications.some(cert => cert && cert.title)) {
+          previewHtml += '<h2>CERTIFICATIONS</h2>';
+          certifications.forEach((cert) => {
+            if (cert && cert.title) {
+              previewHtml += `<p><strong>${cert.title}</strong><br>${cert.issuer || ''}${cert.date ? `, ${cert.date}` : ''}</p>`;
+            }
+          });
+        }
+  
+        // Languages
+        const languages = formData.getAll('languages').filter(lang => lang && lang.trim());
+        if (languages.length > 0) {
+          previewHtml += '<h2>LANGUAGES</h2><p>' + languages.join(', ') + '</p>';
+        }
+  
+        // Interests
+        const interests = formData.getAll('interests').filter(interest => interest && interest.trim());
+        if (interests.length > 0) {
+          previewHtml += '<h2>INTERESTS</h2><p>' + interests.join(', ') + '</p>';
+        }
+  
+        previewContent.innerHTML = previewHtml || '<p>Fill in the form to see your resume preview.</p>';
       }
-
-      // Languages
-      const languages = formData.getAll('languages').filter(lang => lang);
-      if (languages.length > 0) {
-        previewHtml += '<h4>Languages</h4><p>' + languages.join(', ') + '</p>';
-      }
-
-      // Interests
-      const interests = formData.getAll('interests').filter(ಸ
-
-      previewHtml += '</div>';
-      previewContent.innerHTML = previewHtml;
+  
+      form.addEventListener('input', updatePreview);
+      form.addEventListener('change', updatePreview);
+      document.getElementById('preview-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        updatePreview();
+        console.log('Preview updated');
+      });
     });
   </script>
 </body>
