@@ -3,7 +3,7 @@
     padding: 0;
     box-sizing: border-box;
   }
-  
+
   body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
@@ -13,17 +13,17 @@
     flex-direction: column;
     min-height: 100vh;
   }
-  
+
   /* --- Navigation --- */
   nav {
     background: #333;
     color: #fff;
     padding: 0.5rem 0;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    width: 100%; /* Ensure full width */
-    margin: 0; /* Remove any default margin */
+    width: 100%;
+    margin: 0;
   }
-  
+
   nav ul {
     list-style: none;
     display: flex;
@@ -31,11 +31,11 @@
     max-width: 1400px;
     margin: 0 auto;
   }
-  
+
   nav ul li {
     margin: 0 1rem;
   }
-  
+
   nav ul li a {
     color: #fff;
     text-decoration: none;
@@ -43,11 +43,11 @@
     display: block;
     transition: background-color 0.2s ease;
   }
-  
+
   nav ul li a:hover {
     background-color: #555;
   }
-  
+
   /* --- Main Container --- */
   .container {
     max-width: 1400px;
@@ -58,79 +58,117 @@
     border-radius: 5px;
     flex-grow: 1;
   }
-  
+
   h1 {
     margin-bottom: 1.5rem;
     text-align: center;
     color: #333;
   }
-  
+
   /* --- Builder Layout --- */
   .resume-builder {
     display: flex;
     gap: 3rem;
     align-items: flex-start;
   }
-  
+
   #resume-form {
-    flex: 2.5; /* Increased from 2 to give more space */
-    min-width: 400px; /* Increased minimum width */
+    flex: 2.5;
+    min-width: 400px;
   }
-  
+
+  /* --- Preview Styling --- */
   #preview {
-    flex: 2; /* Increased from 1.5 to balance with form */
-    min-width: 900px; /* Increased minimum width */
-    border: 1px solid #ddd;
-    padding: 2rem; /* Increased padding for larger content area */
+    flex: 2;
+    min-width: 900px; /* Kept your width */
+
+    /* *** REMOVED BORDER *** */
+    border: none;
+    /* ******************** */
+
+    padding: 1.5rem; /* Reduced padding slightly */
     background: #fdfdfd;
     border-radius: 4px;
     position: sticky;
     top: 20px;
     align-self: flex-start;
   }
-  
-  #preview h2 {
-    font-size: 1.2em;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 4px;
-    margin-top: 1.2rem;
-    margin-bottom: 0.8rem;
+
+  /* Center Name */
+  #preview h1 {
+     text-align: center;
+     font-size: 1.8em; /* Adjust size as needed */
+     margin-bottom: 0.5rem;
   }
-  
-  #preview p, #preview ul {
+
+  /* Center Contact Info (paragraph directly after h1) */
+  #preview h1 + p {
+      text-align: center;
+      font-size: 0.95em;
+      margin-bottom: 1.5rem; /* More space after contact */
+      color: #555; /* Slightly muted color */
+  }
+
+  /* Section Headers */
+  #preview h2 {
+    font-size: 1.3em; /* Increased size */
+    border-bottom: 2px solid #007bff; /* Kept blue line */
+    padding-bottom: 4px;
+    margin-top: 1.5rem; /* Increased top margin */
+    margin-bottom: 0.8rem;
+    text-align: left; /* Explicitly left-align */
+    color: #333;
+    font-weight: bold;
+  }
+
+  /* Default Paragraph Alignment */
+  #preview p {
     line-height: 1.5;
     margin-bottom: 0.8rem;
+    text-align: left; /* Default left align */
   }
-  
+  /* Ensure paragraphs after contact info reset to left align */
+  #preview h1 + p + * {
+      text-align: left;
+  }
+
+
+  /* Skills List (UL) */
   #preview ul {
-    padding-left: 25px;
+    padding-left: 30px; /* Increased indent */
+    margin-bottom: 0.8rem;
+    text-align: left; /* Ensure list items are left aligned */
+    list-style-position: outside; /* Bullets outside */
   }
-  
+  #preview li {
+      margin-bottom: 4px; /* Space between list items */
+  }
+
+  /* Link Styling in Preview */
   #preview a {
     color: #007bff;
     text-decoration: none;
   }
-  
   #preview a:hover {
     text-decoration: underline;
   }
-  
-  /* --- Form Elements --- */
+
+
+  /* --- Form Elements (Unchanged) --- */
   fieldset {
     border: 1px solid #e0e0e0;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
     border-radius: 4px;
   }
-  
+
   legend {
     font-weight: bold;
     padding: 0 0.5rem;
     font-size: 1.1em;
     color: #444;
   }
-  
-  /* Dynamic entry containers */
+
   .education-entry, .experience-entry, .project-entry, .skill-entry,
   .certification-entry, .language-entry, .interest-entry {
     margin-bottom: 1rem;
@@ -140,7 +178,7 @@
     border-radius: 4px;
     overflow: hidden;
   }
-  
+
   label {
     font-weight: bold;
     display: block;
@@ -148,11 +186,11 @@
     margin-top: 0.5rem;
     color: #555;
   }
-  
+
   .remove-entry + label {
     margin-top: 0;
   }
-  
+
   input[type="text"],
   input[type="email"],
   input[type="tel"],
@@ -168,13 +206,13 @@
     margin-bottom: 0.75rem;
     font-size: 1em;
   }
-  
+
   textarea {
     resize: vertical;
     min-height: 80px;
   }
-  
-  button, #preview-btn {
+
+  button, #preview-btn, #download-pdf /* Included download button */ {
     padding: 0.75rem 1.25rem;
     background: #333;
     color: #fff;
@@ -185,21 +223,20 @@
     transition: background-color 0.2s ease;
     font-size: 1em;
   }
-  
-  #preview-btn {
-    width: 100%;
-    margin-top: 1.5rem;
-    background-color: #007bff;
-  }
-  
-  #preview-btn:hover {
-    background-color: #0056b3;
-  }
-  
+
+  /* Keep preview/download buttons distinct if desired */
+   #download-pdf {
+        background-color: #28a745; /* Example: Green */
+   }
+    #download-pdf:hover {
+        background-color: #218838;
+    }
+   /*#preview-btn was removed*/
+
   button:hover {
     background: #555;
   }
-  
+
   .remove-entry {
     background: #dc3545;
     float: right;
@@ -207,18 +244,18 @@
     padding: 0.4rem 0.8rem;
     margin-top: -5px;
   }
-  
+
   .remove-entry:hover {
     background: #c82333;
   }
-  
+
   [title] {
     cursor: help;
     border-bottom: 1px dotted #777;
     margin-left: 0.25rem;
   }
-  
-  /* --- Responsive --- */
+
+  /* --- Responsive (Unchanged, but check the mobile message) --- */
   @media (max-width: 992px) {
     .resume-builder {
       flex-direction: column;
@@ -233,32 +270,71 @@
       margin-top: 2rem;
     }
   }
-  
+
+  /* Consider adjusting this mobile experience */
   @media (max-width: 768px) {
-    nav ul {
-      flex-direction: column;
-      align-items: center;
-    }
-    nav ul li {
-      margin: 0.5rem 0;
+    .resume-builder {
+      display: none; /* Hides form and preview */
     }
     .container {
-      padding: 1rem;
-      max-width: 95%;
+      /* Allow container to show message */
+       display: flex;
+       flex-direction: column; /* Stack h1 and message */
+       align-items: center; /* Center content */
+       padding: 1rem;
     }
-    h1 {
-      font-size: 1.5em;
+     h1 {
+         /* Adjust h1 for mobile */
+         font-size: 1.2em;
+     }
+    body::before {
+      content: "Desktop view is recommended for the resume builder."; /* Clearer message */
+      font-size: 1.1em;
+      color: #555;
+      margin-top: 1rem; /* Space below title */
     }
-    fieldset, .education-entry, .experience-entry, .project-entry, .skill-entry,
-    .certification-entry, .language-entry, .interest-entry {
-      padding: 1rem;
-    }
-    #preview {
-      padding: 1rem;
-    }
-    button, #preview-btn, input, textarea {
-      padding: 0.6rem 1rem;
-    }
+     nav {
+         /* Basic nav adjustments */
+     }
+     nav ul {
+         flex-direction: column;
+         align-items: center;
+     }
+      nav ul li {
+          margin: 0.3rem 0;
+      }
   }
 
-  
+ /* Modern Template (Unchanged) */
+.modern #preview h1 { /* Base h1 has text-align center, this can override */
+    color: #2c3e50;
+    font-size: 2em;
+    text-transform: uppercase;
+    border-bottom: 3px solid #3498db;
+  }
+  .modern #preview h2 { /* Base h2 styles apply unless overridden here */
+    color: #34495e;
+    border-bottom: 2px solid #3498db;
+  }
+  .modern #preview p {
+    color: #7f8c8d;
+  }
+
+  /* Classic Template (Unchanged) */
+  .classic #preview h1 { /* Base h1 has text-align center, this can override */
+    color: #2f4f4f;
+    font-size: 1.8em;
+    font-style: italic;
+    border-bottom: 1px solid #2f4f4f;
+  }
+  .classic #preview h2 { /* Base h2 styles apply unless overridden here */
+    color: #2f4f4f;
+    border-bottom: 1px solid #2f4f4f;
+  }
+  .classic #preview p {
+    color: #3c3f41;
+  }
+
+  /* General Fixes (Unchanged) */
+  /* .entry-container { margin-bottom: 15px; } */ /* Already styled .*-entry divs */
+  input, textarea { width: 100%; box-sizing: border-box; margin-top: 5px; }

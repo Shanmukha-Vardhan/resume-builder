@@ -5,6 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Resume</title>
   <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <style>
+    body.generating-pdf { cursor: wait; }
+    body.generating-pdf * { pointer-events: none; }
+    #pdf-iframe {
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
+      width: 900px;
+      height: 1120px;
+      border: 0;
+    }
+    #preview {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      padding: 15px;
+      background: #fdfdfd;
+      min-height: 200px;
+    }
+    #preview-content {
+      width: 100%;
+      box-sizing: border-box;
+      word-wrap: break-word;
+      overflow: auto;
+    }
+    #iframe-preview-container {
+      min-width: 900px;
+      width: 100%;
+      min-height: 1px;
+      border: 1px solid #ccc;
+      background: #fdfdfd;
+      padding: 25px;
+      box-sizing: border-box;
+      font-size: 16px;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+    h1 { font-size: 28px; margin: 0 0 15px 0; }
+    .entry-container { margin-bottom: 10px; }
+  </style>
 </head>
 <body>
   <nav>
@@ -14,38 +54,60 @@
       <li><a href="/about">About</a></li>
     </ul>
   </nav>
+
   <div class="container">
     <h1>Create Your Resume</h1>
+
+    <div>
+      <label for="template">Select Template:</label>
+      <select id="template" name="template">
+        <option value="default">Default</option>
+        <option value="modern">Modern</option>
+        <option value="classic">Classic</option>
+      </select>
+    </div>
+
     <div class="resume-builder">
       <form id="resume-form">
-        <!-- Personal Info -->
         <fieldset>
           <legend>Personal Information</legend>
-          <label for="name">Name <span title="Enter your full name">*</span></label>
-          <input type="text" id="name" name="name" placeholder="Enter your name" required>
-          <label for="email">Email <span title="Enter your email address">*</span></label>
-          <input type="email" id="email" name="email" placeholder="Enter your email" required>
-          <label for="phone">Phone</label>
-          <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
-          <label for="linkedin">LinkedIn</label>
-          <input type="url" id="linkedin" name="linkedin" placeholder="Enter your LinkedIn URL">
-          <label for="github">GitHub</label>
-          <input type="url" id="github" name="github" placeholder="Enter your GitHub URL">
-          <label for="photo">Profile Photo (Optional)</label>
-          <input type="file" id="photo" name="photo" accept="image/*">
+          <div class="entry-container">
+            <label for="name">Name <span title="Enter your full name">*</span></label>
+            <input type="text" id="name" name="name" placeholder="Enter your name" required>
+          </div>
+          <div class="entry-container">
+            <label for="email">Email <span title="Enter your email address">*</span></label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+          </div>
+          <div class="entry-container">
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+          </div>
+          <div class="entry-container">
+            <label for="linkedin">LinkedIn</label>
+            <input type="url" id="linkedin" name="linkedin" placeholder="Enter your LinkedIn URL">
+          </div>
+          <div class="entry-container">
+            <label for="github">GitHub</label>
+            <input type="url" id="github" name="github" placeholder="Enter your GitHub URL">
+          </div>
+          <div class="entry-container">
+            <label for="photo">Profile Photo (Optional)</label>
+            <input type="file" id="photo" name="photo" accept="image/*">
+          </div>
         </fieldset>
 
-        <!-- Objective -->
         <fieldset>
           <legend>Objective</legend>
-          <label for="objective">Summary <span title="Write a brief professional summary"></span></label>
-          <textarea id="objective" name="objective" placeholder="e.g., Seeking a software engineering position..."></textarea>
+          <div class="entry-container">
+            <label for="objective">Summary <span title="Write a brief professional summary"></span></label>
+            <textarea id="objective" name="objective" placeholder="e.g., Seeking a software engineering position..."></textarea>
+          </div>
         </fieldset>
 
-        <!-- Education -->
         <fieldset id="education-section">
           <legend>Education</legend>
-          <div class="education-entry">
+          <div class="education-entry entry-container">
             <label for="institution-0">Institution <span title="Enter institution name">*</span></label>
             <input type="text" id="institution-0" name="education[0][institution]" placeholder="e.g., XYZ University" required>
             <label for="degree-0">Degree</label>
@@ -54,15 +116,13 @@
             <input type="number" id="year-0" name="education[0][year]" placeholder="e.g., 2023">
             <label for="cgpa-0">CGPA</label>
             <input type="number" id="cgpa-0" name="education[0][cgpa]" step="0.01" placeholder="e.g., 3.8">
-            <button type="button" class="remove-entry" data-section="education">Remove</button>
           </div>
           <button type="button" id="add-education">Add Education</button>
         </fieldset>
 
-        <!-- Experience -->
         <fieldset id="experience-section">
           <legend>Experience</legend>
-          <div class="experience-entry">
+          <div class="experience-entry entry-container">
             <label for="company-0">Company <span title="Enter company name">*</span></label>
             <input type="text" id="company-0" name="experience[0][company]" placeholder="e.g., ABC Corp" required>
             <label for="role-0">Role</label>
@@ -71,15 +131,13 @@
             <input type="text" id="duration-0" name="experience[0][duration]" placeholder="e.g., Jan 2022 - Present">
             <label for="responsibilities-0">Responsibilities</label>
             <textarea id="responsibilities-0" name="experience[0][responsibilities]" placeholder="e.g., Developed web applications..."></textarea>
-            <button type="button" class="remove-entry" data-section="experience">Remove</button>
           </div>
           <button type="button" id="add-experience">Add Experience</button>
         </fieldset>
 
-        <!-- Projects -->
         <fieldset id="projects-section">
           <legend>Projects</legend>
-          <div class="project-entry">
+          <div class="project-entry entry-container">
             <label for="project-title-0">Title <span title="Enter project title">*</span></label>
             <input type="text" id="project-title-0" name="projects[0][title]" placeholder="e.g., E-commerce Platform" required>
             <label for="project-desc-0">Description</label>
@@ -88,60 +146,51 @@
             <input type="text" id="project-tech-0" name="projects[0][tech]" placeholder="e.g., React, Node.js, MongoDB">
             <label for="project-link-0">GitHub Link</label>
             <input type="url" id="project-link-0" name="projects[0][link]" placeholder="e.g., https://github.com/...">
-            <button type="button" class="remove-entry" data-section="projects">Remove</button>
           </div>
           <button type="button" id="add-project">Add Project</button>
         </fieldset>
 
-        <!-- Skills -->
         <fieldset id="skills-section">
           <legend>Skills</legend>
-          <div class="skill-entry">
+          <div class="skill-entry entry-container">
             <label for="skill-0">Skill <span title="Enter a skill">*</span></label>
             <input type="text" id="skill-0" name="skills[]" placeholder="e.g., JavaScript" required>
-            <button type="button" class="remove-entry" data-section="skills">Remove</button>
           </div>
           <button type="button" id="add-skill">Add Skill</button>
         </fieldset>
 
-        <!-- Certifications -->
         <fieldset id="certifications-section">
           <legend>Certifications</legend>
-          <div class="certification-entry">
+          <div class="certification-entry entry-container">
             <label for="cert-title-0">Title <span title="Enter certification title">*</span></label>
             <input type="text" id="cert-title-0" name="certifications[0][title]" placeholder="e.g., AWS Certified Developer" required>
             <label for="cert-issuer-0">Issuer</label>
             <input type="text" id="cert-issuer-0" name="certifications[0][issuer]" placeholder="e.g., Amazon">
             <label for="cert-date-0">Date</label>
             <input type="date" id="cert-date-0" name="certifications[0][date]">
-            <button type="button" class="remove-entry" data-section="certifications">Remove</button>
           </div>
           <button type="button" id="add-certification">Add Certification</button>
         </fieldset>
 
-        <!-- Languages -->
         <fieldset id="languages-section">
           <legend>Languages</legend>
-          <div class="language-entry">
+          <div class="language-entry entry-container">
             <label for="language-0">Language <span title="Enter a language">*</span></label>
             <input type="text" id="language-0" name="languages[]" placeholder="e.g., English" required>
-            <button type="button" class="remove-entry" data-section="languages">Remove</button>
           </div>
           <button type="button" id="add-language">Add Language</button>
         </fieldset>
 
-        <!-- Interests -->
         <fieldset id="interests-section">
           <legend>Interests/Hobbies</legend>
-          <div class="interest-entry">
+          <div class="interest-entry entry-container">
             <label for="interest-0">Interest <span title="Enter an interest or hobby">*</span></label>
             <input type="text" id="interest-0" name="interests[]" placeholder="e.g., Hiking" required>
-            <button type="button" class="remove-entry" data-section="interests">Remove</button>
           </div>
           <button type="button" id="add-interest">Add Interest</button>
         </fieldset>
 
-        <button type="button" id="preview-btn">Preview & Update</button>
+        <button type="button" id="download-pdf">Download PDF</button>
       </form>
 
       <div id="preview">
@@ -157,257 +206,427 @@
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('resume-form');
       const previewContent = document.getElementById('preview-content');
-      const previewBtn = document.getElementById('preview-btn');
+      const previewContainer = document.getElementById('preview');
+      const templateSelect = document.getElementById('template');
+      const downloadBtn = document.getElementById('download-pdf');
 
-      if (!form || !previewContent) {
-        console.error('Form or preview content area not found');
+      if (!form || !previewContent || !previewContainer || !downloadBtn) {
+        console.error("Essential elements missing!");
+        if (downloadBtn) downloadBtn.disabled = true;
         return;
       }
 
       const educationTemplate = `
-        <label for="institution-INDEX">Institution *</label>
-        <input type="text" id="institution-INDEX" name="education[INDEX][institution]" placeholder="e.g., XYZ University" required>
-        <label for="degree-INDEX">Degree</label>
-        <input type="text" id="degree-INDEX" name="education[INDEX][degree]" placeholder="e.g., B.S. Computer Science">
-        <label for="year-INDEX">Year</label>
-        <input type="number" id="year-INDEX" name="education[INDEX][year]" placeholder="e.g., 2023">
-        <label for="cgpa-INDEX">CGPA</label>
-        <input type="number" id="cgpa-INDEX" name="education[INDEX][cgpa]" step="0.01" placeholder="e.g., 3.8">
-        <button type="button" class="remove-entry" data-section="education">Remove</button>
+        <div class="education-entry entry-container">
+          <label for="institution-TIMESTAMP">Institution *</label>
+          <input type="text" id="institution-TIMESTAMP" name="education[TIMESTAMP][institution]" placeholder="e.g., XYZ University" required>
+          <label for="degree-TIMESTAMP">Degree</label>
+          <input type="text" id="degree-TIMESTAMP" name="education[TIMESTAMP][degree]" placeholder="e.g., B.S. Computer Science">
+          <label for="year-TIMESTAMP">Year</label>
+          <input type="number" id="year-TIMESTAMP" name="education[TIMESTAMP][year]" placeholder="e.g., 2023">
+          <label for="cgpa-TIMESTAMP">CGPA</label>
+          <input type="number" id="cgpa-TIMESTAMP" name="education[TIMESTAMP][cgpa]" step="0.01" placeholder="e.g., 3.8">
+          <button type="button" class="remove-entry" data-section="education">Remove</button>
+        </div>
       `;
-
       const experienceTemplate = `
-        <label for="company-INDEX">Company *</label>
-        <input type="text" id="company-INDEX" name="experience[INDEX][company]" placeholder="e.g., ABC Corp" required>
-        <label for="role-INDEX">Role</label>
-        <input type="text" id="role-INDEX" name="experience[INDEX][role]" placeholder="e.g., Software Engineer">
-        <label for="duration-INDEX">Duration</label>
-        <input type="text" id="duration-INDEX" name="experience[INDEX][duration]" placeholder="e.g., Jan 2022 - Present">
-        <label for="responsibilities-INDEX">Responsibilities</label>
-        <textarea id="responsibilities-INDEX" name="experience[INDEX][responsibilities]" placeholder="e.g., Developed web applications..."></textarea>
-        <button type="button" class="remove-entry" data-section="experience">Remove</button>
+        <div class="experience-entry entry-container">
+          <label for="company-TIMESTAMP">Company *</label>
+          <input type="text" id="company-TIMESTAMP" name="experience[TIMESTAMP][company]" placeholder="e.g., ABC Corp" required>
+          <label for="role-TIMESTAMP">Role</label>
+          <input type="text" id="role-TIMESTAMP" name="experience[TIMESTAMP][role]" placeholder="e.g., Software Engineer">
+          <label for="duration-TIMESTAMP">Duration</label>
+          <input type="text" id="duration-TIMESTAMP" name="experience[TIMESTAMP][duration]" placeholder="e.g., Jan 2022 - Present">
+          <label for="responsibilities-TIMESTAMP">Responsibilities</label>
+          <textarea id="responsibilities-TIMESTAMP" name="experience[TIMESTAMP][responsibilities]" placeholder="e.g., Developed web applications..."></textarea>
+          <button type="button" class="remove-entry" data-section="experience">Remove</button>
+        </div>
       `;
-
       const projectTemplate = `
-        <label for="project-title-INDEX">Title *</label>
-        <input type="text" id="project-title-INDEX" name="projects[INDEX][title]" placeholder="e.g., E-commerce Platform" required>
-        <label for="project-desc-INDEX">Description</label>
-        <textarea id="project-desc-INDEX" name="projects[INDEX][description]" placeholder="e.g., Built a full-stack application..."></textarea>
-        <label for="project-tech-INDEX">Tech Stack</label>
-        <input type="text" id="project-tech-INDEX" name="projects[INDEX][tech]" placeholder="e.g., React, Node.js, MongoDB">
-        <label for="project-link-INDEX">GitHub Link</label>
-        <input type="url" id="project-link-INDEX" name="projects[INDEX][link]" placeholder="e.g., https://github.com/...">
-        <button type="button" class="remove-entry" data-section="projects">Remove</button>
+        <div class="project-entry entry-container">
+          <label for="project-title-TIMESTAMP">Title *</label>
+          <input type="text" id="project-title-TIMESTAMP" name="projects[TIMESTAMP][title]" placeholder="e.g., E-commerce Platform" required>
+          <label for="project-desc-TIMESTAMP">Description</label>
+          <textarea id="project-desc-TIMESTAMP" name="projects[TIMESTAMP][description]" placeholder="e.g., Built a full-stack application..."></textarea>
+          <label for="project-tech-TIMESTAMP">Tech Stack</label>
+          <input type="text" id="project-tech-TIMESTAMP" name="projects[TIMESTAMP][tech]" placeholder="e.g., React, Node.js, MongoDB">
+          <label for="project-link-TIMESTAMP">GitHub Link</label>
+          <input type="url" id="project-link-TIMESTAMP" name="projects[TIMESTAMP][link]" placeholder="e.g., https://github.com/...">
+          <button type="button" class="remove-entry" data-section="projects">Remove</button>
+        </div>
       `;
-
       const skillTemplate = `
-        <label for="skill-INDEX">Skill *</label>
-        <input type="text" id="skill-INDEX" name="skills[]" placeholder="e.g., Python" required>
-        <button type="button" class="remove-entry" data-section="skills">Remove</button>
+        <div class="skill-entry entry-container">
+          <label for="skill-TIMESTAMP">Skill *</label>
+          <input type="text" id="skill-TIMESTAMP" name="skills[]" placeholder="e.g., Python" required>
+          <button type="button" class="remove-entry" data-section="skills">Remove</button>
+        </div>
       `;
-
       const certificationTemplate = `
-        <label for="cert-title-INDEX">Title *</label>
-        <input type="text" id="cert-title-INDEX" name="certifications[INDEX][title]" placeholder="e.g., Google Cloud Certified" required>
-        <label for="cert-issuer-INDEX">Issuer</label>
-        <input type="text" id="cert-issuer-INDEX" name="certifications[INDEX][issuer]" placeholder="e.g., Google">
-        <label for="cert-date-INDEX">Date</label>
-        <input type="date" id="cert-date-INDEX" name="certifications[INDEX][date]">
-        <button type="button" class="remove-entry" data-section="certifications">Remove</button>
+        <div class="certification-entry entry-container">
+          <label for="cert-title-TIMESTAMP">Title *</label>
+          <input type="text" id="cert-title-TIMESTAMP" name="certifications[TIMESTAMP][title]" placeholder="e.g., Google Cloud Certified" required>
+          <label for="cert-issuer-TIMESTAMP">Issuer</label>
+          <input type="text" id="cert-issuer-TIMESTAMP" name="certifications[TIMESTAMP][issuer]" placeholder="e.g., Google">
+          <label for="cert-date-TIMESTAMP">Date</label>
+          <input type="date" id="cert-date-TIMESTAMP" name="certifications[TIMESTAMP][date]">
+          <button type="button" class="remove-entry" data-section="certifications">Remove</button>
+        </div>
       `;
-
       const languageTemplate = `
-        <label for="language-INDEX">Language *</label>
-        <input type="text" id="language-INDEX" name="languages[]" placeholder="e.g., Spanish" required>
-        <button type="button" class="remove-entry" data-section="languages">Remove</button>
+        <div class="language-entry entry-container">
+          <label for="language-TIMESTAMP">Language *</label>
+          <input type="text" id="language-TIMESTAMP" name="languages[]" placeholder="e.g., Spanish" required>
+          <button type="button" class="remove-entry" data-section="languages">Remove</button>
+        </div>
       `;
-
       const interestTemplate = `
-        <label for="interest-INDEX">Interest *</label>
-        <input type="text" id="interest-INDEX" name="interests[]" placeholder="e.g., Reading" required>
-        <button type="button" class="remove-entry" data-section="interests">Remove</button>
+        <div class="interest-entry entry-container">
+          <label for="interest-TIMESTAMP">Interest *</label>
+          <input type="text" id="interest-TIMESTAMP" name="interests[]" placeholder="e.g., Reading" required>
+          <button type="button" class="remove-entry" data-section="interests">Remove</button>
+        </div>
       `;
 
       const sections = {
-        education: { template: educationTemplate, buttonId: 'add-education' },
-        experience: { template: experienceTemplate, buttonId: 'add-experience' },
-        projects: { template: projectTemplate, buttonId: 'add-project' },
-        skills: { template: skillTemplate, buttonId: 'add-skill' },
-        certifications: { template: certificationTemplate, buttonId: 'add-certification' },
-        languages: { template: languageTemplate, buttonId: 'add-language' },
-        interests: { template: interestTemplate, buttonId: 'add-interest' },
+        education: { template: educationTemplate, entryClass: 'education-entry', addButtonId: 'add-education' },
+        experience: { template: experienceTemplate, entryClass: 'experience-entry', addButtonId: 'add-experience' },
+        projects: { template: projectTemplate, entryClass: 'project-entry', addButtonId: 'add-project' },
+        skills: { template: skillTemplate, entryClass: 'skill-entry', addButtonId: 'add-skill' },
+        certifications: { template: certificationTemplate, entryClass: 'certification-entry', addButtonId: 'add-certification' },
+        languages: { template: languageTemplate, entryClass: 'language-entry', addButtonId: 'add-language' },
+        interests: { template: interestTemplate, entryClass: 'interest-entry', addButtonId: 'add-interest' },
       };
 
-      function addEntry(sectionName, template) {
-        const sectionEl = document.getElementById(`${sectionName}-section`);
-        const addButton = document.getElementById(sections[sectionName].buttonId);
-        if (!sectionEl || !addButton) {
-          console.error(`Section or add button for "${sectionName}" not found`);
+      function addEntry(sectionName) {
+        const config = sections[sectionName];
+        if (!config) {
+          console.error(`Config not found for section "${sectionName}"`);
           return;
         }
-        const entryCount = sectionEl.querySelectorAll(`.${sectionName}-entry`).length;
-        const newIndex = entryCount;
-        const newEntry = document.createElement('div');
-        newEntry.className = `${sectionName}-entry`;
-        newEntry.innerHTML = template.replace(/INDEX/g, newIndex);
-        sectionEl.insertBefore(newEntry, addButton);
-        console.log(`Added ${sectionName} entry #${newIndex + 1}`);
+        const sectionElement = document.getElementById(`${sectionName}-section`);
+        const addButton = document.getElementById(config.addButtonId);
+        if (!sectionElement || !addButton) {
+          console.error(`Section or add button not found for "${sectionName}"`);
+          return;
+        }
+        const newIndex = Date.now();
+        const newEntryDiv = document.createElement('div');
+        newEntryDiv.className = config.entryClass;
+        newEntryDiv.innerHTML = config.template.replace(/TIMESTAMP/g, newIndex);
+        sectionElement.insertBefore(newEntryDiv, addButton);
         updatePreview();
       }
 
-      form.addEventListener('click', (event) => {
-        const target = event.target;
-        if (target.classList.contains('remove-entry')) {
-          const section = target.dataset.section;
-          const entry = target.closest(`.${section}-entry`);
-          const sectionEl = document.getElementById(`${section}-section`);
-          if (entry && sectionEl) {
-            entry.remove();
-            console.log(`Removed ${section} entry`);
+      form.addEventListener('click', function(event) {
+        if (event.target.classList.contains('remove-entry')) {
+          const button = event.target;
+          const sectionName = button.dataset.section;
+          const config = sections[sectionName];
+          if (!config) {
+            console.error(`Config not found for section "${sectionName}" during remove.`);
+            return;
+          }
+          const entryToRemove = button.closest(`.${config.entryClass}`);
+          if (entryToRemove) {
+            const sectionElement = document.getElementById(`${sectionName}-section`);
+            const entryCount = sectionElement.querySelectorAll(`.${config.entryClass}`).length;
+            if (entryCount <= 1) {
+              alert(`You need at least one entry in the ${sectionName} section.`);
+              return;
+            }
+            entryToRemove.remove();
             updatePreview();
           }
         }
       });
 
       Object.entries(sections).forEach(([sectionName, config]) => {
-        const button = document.getElementById(config.buttonId);
-        if (button) {
-          button.addEventListener('click', () => addEntry(sectionName, config.template));
-        } else {
-          console.warn(`Add button with ID "${config.buttonId}" not found for section "${sectionName}".`);
+        const addButton = document.getElementById(config.addButtonId);
+        if (addButton) {
+          addButton.addEventListener('click', () => addEntry(sectionName));
         }
       });
 
       function updatePreview() {
-        console.log("Updating preview...");
+        console.log('Updating preview...');
         const formData = new FormData(form);
+        console.log('Form data:', Array.from(formData.entries()));
         let previewHtml = '';
-
         const sanitize = (str) => {
+          if (!str) return '';
           const temp = document.createElement('div');
           temp.textContent = str;
-          return temp.innerHTML;
+          return temp.innerHTML.replace(/\n/g, '<br>');
+        };
+        const parseDynamicSection = (sectionName) => {
+          const items = [];
+          const indices = new Set();
+          formData.forEach((_, key) => {
+            const match = key.match(new RegExp(`^${sectionName}\\[([^\\]]+)\\]\\[\\w+\\]$`));
+            if (match) indices.add(match[1]);
+          });
+          indices.forEach(index => {
+            const item = { rawIndex: index };
+            formData.forEach((value, key) => {
+              const match = key.match(new RegExp(`^${sectionName}\\[${index}\\]\\[(\\w+)\\]$`));
+              if (match) item[match[1]] = value;
+            });
+            let hasContent = false;
+            Object.keys(item).forEach(field => {
+              if (field !== 'rawIndex') {
+                item[field] = sanitize(item[field]);
+                if (item[field] && item[field].trim() !== '<br>') {
+                  hasContent = true;
+                }
+              }
+            });
+            if (hasContent) {
+              items.push(item);
+            }
+          });
+          return items;
         };
 
+        const linkedinUrl = sanitize(formData.get('linkedin') || '');
+        const githubUrl = sanitize(formData.get('github') || '');
         const name = sanitize(formData.get('name') || 'Your Name');
+        console.log('Name for preview:', name);
         const email = sanitize(formData.get('email') || '');
         const phone = sanitize(formData.get('phone') || '');
-        const linkedin = sanitize(formData.get('linkedin') || '');
-        const github = sanitize(formData.get('github') || '');
         previewHtml += `<h1>${name}</h1>`;
-        let contactInfo = [phone, email, linkedin, github].filter(Boolean).join(' | ');
+        let contactInfo = [phone, email, linkedinUrl ? `<a href="${linkedinUrl}" target="_blank">${linkedinUrl}</a>` : '', githubUrl ? `<a href="${githubUrl}" target="_blank">${githubUrl}</a>` : ''].filter(Boolean).join(' | ');
         if (contactInfo) previewHtml += `<p>${contactInfo}</p>`;
-
         const objective = sanitize(formData.get('objective') || '');
-        if (objective) previewHtml += `<h2>SUMMARY</h2><p>${objective}</p>`;
-
-        const education = [];
-        formData.forEach((value, key) => {
-          const match = key.match(/^education\[(\d+)\]\[(\w+)\]$/);
-          if (match) {
-            const [, index, field] = match;
-            education[index] = education[index] || {};
-            education[index][field] = sanitize(value);
-          }
-        });
-        if (education.some(e => e?.institution)) {
+        if (objective && objective.trim() !== '<br>') previewHtml += `<h2>SUMMARY</h2><p>${objective}</p>`;
+        const education = parseDynamicSection('education');
+        if (education.length > 0) {
           previewHtml += '<h2>EDUCATION</h2>';
           education.forEach(e => {
-            if (e?.institution) {
-              previewHtml += `<p><strong>${e.institution}</strong>${e.degree ? ` - ${e.degree}` : ''}<br>
-                              ${e.year ? `Year: ${e.year}` : ''}${e.cgpa ? ` | CGPA: ${e.cgpa}` : ''}</p>`;
+            if (e.institution && e.institution.trim() !== '<br>') {
+              previewHtml += `<p><strong>${e.institution}</strong>${e.degree ? ` - ${e.degree}` : ''}<br>${e.year ? `Year: ${e.year}` : ''}${e.cgpa ? ` | CGPA: ${e.cgpa}` : ''}</p>`;
             }
           });
         }
-
-        const experience = [];
-        formData.forEach((value, key) => {
-          const match = key.match(/^experience\[(\d+)\]\[(\w+)\]$/);
-          if (match) {
-            const [, index, field] = match;
-            experience[index] = experience[index] || {};
-            experience[index][field] = sanitize(value);
-          }
-        });
-        if (experience.some(e => e?.company)) {
+        const experience = parseDynamicSection('experience');
+        if (experience.length > 0) {
           previewHtml += '<h2>EXPERIENCE</h2>';
           experience.forEach(e => {
-            if (e?.company) {
-              previewHtml += `<p><strong>${e.company}</strong>${e.role ? ` | ${e.role}` : ''}<br>
-                              ${e.duration ? `${e.duration}<br>` : ''}
-                              ${e.responsibilities ? e.responsibilities.replace(/\n/g, '<br>') : ''}</p>`;
+            if (e.company && e.company.trim() !== '<br>') {
+              previewHtml += `<p><strong>${e.company}</strong>${e.role ? ` | ${e.role}` : ''}<br>${e.duration ? `${e.duration}<br>` : ''}${e.responsibilities || ''}</p>`;
             }
           });
         }
-
-        const projects = [];
-        formData.forEach((value, key) => {
-          const match = key.match(/^projects\[(\d+)\]\[(\w+)\]$/);
-          if (match) {
-            const [, index, field] = match;
-            projects[index] = projects[index] || {};
-            projects[index][field] = sanitize(value);
-          }
-        });
-        if (projects.some(p => p?.title)) {
+        const projects = parseDynamicSection('projects');
+        if (projects.length > 0) {
           previewHtml += '<h2>PROJECTS</h2>';
           projects.forEach(p => {
-            if (p?.title) {
-              previewHtml += `<p><strong>${p.title}</strong><br>
-                              ${p.description ? `${p.description}<br>` : ''}
-                              ${p.tech ? `Tech Stack: ${p.tech}<br>` : ''}
-                              ${p.link ? `Link: <a href="${p.link}" target="_blank">${p.link}</a>` : ''}</p>`;
+            if (p.title && p.title.trim() !== '<br>') {
+              const rawLink = formData.get(`projects[${p.rawIndex}][link]`) || '';
+              previewHtml += `<p><strong>${p.title}</strong><br>${p.description ? `${p.description}<br>` : ''}${p.tech ? `Tech Stack: ${p.tech}<br>` : ''}${rawLink ? `Link: <a href="${sanitize(rawLink)}" target="_blank">${sanitize(rawLink)}</a>` : ''}</p>`;
             }
           });
         }
-
-        const skills = formData.getAll('skills[]').map(s => sanitize(s)).filter(s => s && s.trim());
-        if (skills.length) {
+        const skills = formData.getAll('skills[]').map(s => sanitize(s)).filter(s => s && s.trim() && s !== '<br>');
+        if (skills.length > 0) {
           previewHtml += '<h2>SKILLS</h2><ul>' + skills.map(s => `<li>${s}</li>`).join('') + '</ul>';
         }
-
-        const certifications = [];
-        formData.forEach((value, key) => {
-          const match = key.match(/^certifications\[(\d+)\]\[(\w+)\]$/);
-          if (match) {
-            const [, index, field] = match;
-            certifications[index] = certifications[index] || {};
-            certifications[index][field] = sanitize(value);
-          }
-        });
-        if (certifications.some(c => c?.title)) {
+        const certifications = parseDynamicSection('certifications');
+        if (certifications.length > 0) {
           previewHtml += '<h2>CERTIFICATIONS</h2>';
           certifications.forEach(c => {
-            if (c?.title) {
+            if (c.title && c.title.trim() !== '<br>') {
               previewHtml += `<p><strong>${c.title}</strong>${c.issuer ? ` - ${c.issuer}` : ''}${c.date ? `, ${c.date}` : ''}</p>`;
             }
           });
         }
-
-        const languages = formData.getAll('languages[]').map(l => sanitize(l)).filter(l => l && l.trim());
-        if (languages.length) {
+        const languages = formData.getAll('languages[]').map(l => sanitize(l)).filter(l => l && l.trim() && l !== '<br>');
+        if (languages.length > 0) {
           previewHtml += '<h2>LANGUAGES</h2><p>' + languages.join(', ') + '</p>';
         }
-
-        const interests = formData.getAll('interests[]').map(i => sanitize(i)).filter(i => i && i.trim());
-        if (interests.length) {
+        const interests = formData.getAll('interests[]').map(i => sanitize(i)).filter(i => i && i.trim() && i !== '<br>');
+        if (interests.length > 0) {
           previewHtml += '<h2>INTERESTS</h2><p>' + interests.join(', ') + '</p>';
         }
 
         previewContent.innerHTML = previewHtml || '<p>Fill in the form to see your resume preview.</p>';
+        previewContainer.style.height = `${previewContent.scrollHeight}px`; // Adjust height dynamically
+        console.log('Preview updated:', previewContent.innerHTML);
+      }
+
+      function applyTemplate() {
+        const selectedTemplate = templateSelect.value;
+        console.log(`Applying template: ${selectedTemplate}`);
+        previewContainer.className = selectedTemplate; // Apply template class
+        updatePreview();
+      }
+
+      if (templateSelect) {
+        templateSelect.addEventListener('change', applyTemplate);
       }
 
       updatePreview();
       form.addEventListener('input', updatePreview);
-      if (previewBtn) {
-        previewBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          updatePreview();
-          console.log('Preview manually updated via button');
-        });
-      } else {
-        console.error('Preview button not found');
-      }
+
+      downloadBtn.addEventListener('click', () => {
+        console.log("Starting PDF download process...");
+        document.body.classList.add('generating-pdf');
+
+        const livePreviewContent = document.getElementById('preview-content');
+        console.log('Checking preview content:', livePreviewContent?.innerHTML);
+        if (!livePreviewContent || !livePreviewContent.innerHTML.trim()) {
+          console.error('No content in preview.');
+          alert('Please add content to your resume before downloading.');
+          document.body.classList.remove('generating-pdf');
+          return;
+        }
+        console.log("Content found, proceeding with PDF generation.");
+
+        const existingIframe = document.getElementById('pdf-iframe');
+        if (existingIframe) {
+          existingIframe.remove();
+        }
+
+        console.log("Creating hidden iframe...");
+        const iframe = document.createElement('iframe');
+        iframe.id = 'pdf-iframe';
+        document.body.appendChild(iframe);
+
+        const cssLink = '/css/style.css';
+        const iframeHTML = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <title>PDF Render</title>
+            <link rel="stylesheet" href="${cssLink}">
+            <style>
+              body { margin: 0; padding: 0; background-color: #fff; }
+              #iframe-preview-container {
+                width: 750px; /* Adjusted width slightly for better padding */
+                margin: 0 auto; /* Center block if needed (visual only) */
+                min-height: 1px;
+
+                /* *** REMOVED BORDER *** */
+                border: none;
+                /* ******************** */
+
+                background: #fff;
+                padding: 40px; /* Keep increased padding */
+                box-sizing: border-box;
+                font-size: 12pt;
+                font-family: Arial, sans-serif;
+                color: #333;
+                line-height: 1.4;
+              }
+              /* Explicit base styles for PDF */
+              #iframe-preview-container h1 {
+                 font-size: 22pt; /* Slightly larger */
+                 margin: 0 0 10px 0; /* Adjust margin */
+                 font-weight: bold;
+                 /* *** CENTER ALIGN NAME *** */
+                 text-align: center;
+                 /* *********************** */
+              }
+               /* Style the paragraph DIRECTLY AFTER H1 (Contact Info) */
+               #iframe-preview-container h1 + p {
+                   font-size: 11pt;
+                   margin-bottom: 25px; /* More space after contact */
+                   /* *** CENTER ALIGN CONTACT INFO *** */
+                   text-align: center;
+                   /* ***************************** */
+               }
+               #iframe-preview-container h2 {
+                   font-size: 16pt; margin: 25px 0 10px 0; /* Added top margin */
+                   border-bottom: 1px solid #555; /* Darker border */
+                   padding-bottom: 4px; font-weight: bold;
+                   text-align: left; /* Ensure section headers are left-aligned */
+                }
+               #iframe-preview-container p {
+                   margin: 0 0 10px 0;
+                   text-align: left; /* Default paragraphs to left */
+                }
+               #iframe-preview-container ul { margin: 0 0 10px 0; padding-left: 30px; text-align: left; } /* Indent lists */
+               #iframe-preview-container li { margin-bottom: 5px; }
+               #iframe-preview-container strong { font-weight: bold; }
+               /* Style project links specifically if needed */
+               #iframe-preview-container a { color: #007bff; text-decoration: none; }
+
+            </style>
+          </head>
+          <body>
+            <div id="iframe-preview-container">
+               ${livePreviewContent.innerHTML}
+            </div>
+          </body>
+          </html>
+        `;
+        
+        iframe.contentWindow.document.open();
+        iframe.contentWindow.document.write(iframeHTML);
+        iframe.contentWindow.document.close();
+
+        iframe.onload = () => {
+          console.log("Iframe ready, generating PDF...");
+          if (typeof html2pdf === 'undefined') {
+            console.error('PDF library not loaded.');
+            alert('PDF library error. Please try again.');
+            document.body.classList.remove('generating-pdf');
+            iframe.remove();
+            return;
+          }
+
+          const nameInput = document.getElementById('name');
+          console.log('Name for filename:', nameInput?.value);
+          const filename = (nameInput && nameInput.value.trim()) ? `${nameInput.value.trim().replace(/\s+/g, '_')}_Resume.pdf` : 'resume.pdf';
+
+          const elementToExportInIframe = iframe.contentWindow.document.getElementById('iframe-preview-container');
+          if (!elementToExportInIframe) {
+            console.error("Iframe content not found!");
+            alert("Error: Could not generate PDF.");
+            document.body.classList.remove('generating-pdf');
+            iframe.remove();
+            return;
+          }
+
+          const iframeElementHeight = elementToExportInIframe.scrollHeight;
+          console.log(`Iframe content height: ${iframeElementHeight}px`);
+
+          const opt = {
+            margin: [10, 10, 10, 10],
+            filename: filename,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: {
+              scale: 2,
+              logging: true,
+              useCORS: true,
+              scrollY: 0,
+              windowWidth: elementToExportInIframe.scrollWidth,
+              windowHeight: iframeElementHeight
+            },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          };
+
+          html2pdf().set(opt).from(elementToExportInIframe).save()
+            .then(() => { console.log('PDF downloaded successfully!'); })
+            .catch((error) => { 
+              console.error('PDF generation failed:', error); 
+              alert(`Failed to generate PDF: ${error}`); 
+            })
+            .finally(() => {
+              console.log("Cleaning up iframe.");
+              iframe.remove();
+              document.body.classList.remove('generating-pdf');
+            });
+        };
+
+        iframe.onerror = (err) => {
+          console.error("Iframe error:", err);
+          alert("Error loading PDF content. Check if CSS file is accessible.");
+          document.body.classList.remove('generating-pdf');
+          iframe.remove();
+        };
+      });
     });
   </script>
 </body>
