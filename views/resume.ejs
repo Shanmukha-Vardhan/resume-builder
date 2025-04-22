@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Resume</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/resume">Create Resume</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+  </nav>
+  <div class="container">
+    <h1>Create Your Resume</h1>
+    <div class="resume-builder">
+      <form id="resume-form">
+        <!-- Personal Info -->
+        <fieldset>
+          <legend>Personal Information</legend>
+          <label for="name">Name <span title="Enter your full name">*</span></label>
+          <input type="text" id="name" name="name" placeholder="Enter your name" required>
+          <label for="email">Email <span title="Enter your email address">*</span></label>
+          <input type="email" id="email" name="email" placeholder="Enter your email" required>
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+          <label for="linkedin">LinkedIn</label>
+          <input type="url" id="linkedin" name="linkedin" placeholder="Enter your LinkedIn URL">
+          <label for="github">GitHub</label>
+          <input type="url" id="github" name="github" placeholder="Enter your GitHub URL">
+          <label for="photo">Profile Photo (Optional)</label>
+          <input type="file" id="photo" name="photo" accept="image/*">
+        </fieldset>
+
+        <!-- Objective -->
+        <fieldset>
+          <legend>Objective</legend>
+          <label for="objective">Summary <span title="Write a brief professional summary"></span></label>
+          <textarea id="objective" name="objective" placeholder="e.g., Seeking a software engineering position..."></textarea>
+        </fieldset>
+
+        <!-- Education -->
+        <fieldset id="education-section">
+          <legend>Education</legend>
+          <div class="education-entry">
+            <label for="institution-0">Institution <span title="Enter institution name">*</span></label>
+            <input type="text" id="institution-0" name="education[0][institution]" placeholder="e.g., XYZ University" required>
+            <label for="degree-0">Degree</label>
+            <input type="text" id="degree-0" name="education[0][degree]" placeholder="e.g., B.S. Computer Science">
+            <label for="year-0">Year</label>
+            <input type="number" id="year-0" name="education[0][year]" placeholder="e.g., 2023">
+            <label for="cgpa-0">CGPA</label>
+            <input type="number" id="cgpa-0" name="education[0][cgpa]" step="0.01" placeholder="e.g., 3.8">
+            <button type="button" class="remove-entry" data-section="education">Remove</button>
+          </div>
+          <button type="button" id="add-education">Add Education</button>
+        </fieldset>
+
+        <!-- Experience -->
+        <fieldset id="experience-section">
+          <legend>Experience</legend>
+          <div class="experience-entry">
+            <label for="company-0">Company <span title="Enter company name">*</span></label>
+            <input type="text" id="company-0" name="experience[0][company]" placeholder="e.g., ABC Corp" required>
+            <label for="role-0">Role</label>
+            <input type="text" id="role-0" name="experience[0][role]" placeholder="e.g., Software Engineer">
+            <label for="duration-0">Duration</label>
+            <input type="text" id="duration-0" name="experience[0][duration]" placeholder="e.g., Jan 2022 - Present">
+            <label for="responsibilities-0">Responsibilities</label>
+            <textarea id="responsibilities-0" name="experience[0][responsibilities]" placeholder="e.g., Developed web applications..."></textarea>
+            <button type="button" class="remove-entry" data-section="experience">Remove</button>
+          </div>
+          <button type="button" id="add-experience">Add Experience</button>
+        </fieldset>
+
+        <!-- Projects -->
+        <fieldset id="projects-section">
+          <legend>Projects</legend>
+          <div class="project-entry">
+            <label for="project-title-0">Title <span title="Enter project title">*</span></label>
+            <input type="text" id="project-title-0" name="projects[0][title]" placeholder="e.g., E-commerce Platform" required>
+            <label for="project-desc-0">Description</label>
+            <textarea id="project-desc-0" name="projects[0][description]" placeholder="e.g., Built a full-stack application..."></textarea>
+            <label for="project-tech-0">Tech Stack</label>
+            <input type="text" id="project-tech-0" name="projects[0][tech]" placeholder="e.g., React, Node.js, MongoDB">
+            <label for="project-link-0">GitHub Link</label>
+            <input type="url" id="project-link-0" name="projects[0][link]" placeholder="e.g., https://github.com/...">
+            <button type="button" class="remove-entry" data-section="projects">Remove</button>
+          </div>
+          <button type="button" id="add-project">Add Project</button>
+        </fieldset>
+
+        <!-- Skills -->
+        <fieldset id="skills-section">
+          <legend>Skills</legend>
+          <div class="skill-entry">
+            <label for="skill-0">Skill <span title="Enter a skill">*</span></label>
+            <input type="text" id="skill-0" name="skills[0]" placeholder="e.g., JavaScript" required>
+            <button type="button" class="remove-entry" data-section="skills">Remove</button>
+          </div>
+          <button type="button" id="add-skill">Add Skill</button>
+        </fieldset>
+
+        <!-- Certifications -->
+        <fieldset id="certifications-section">
+          <legend>Certifications</legend>
+          <div class="certification-entry">
+            <label for="cert-title-0">Title <span title="Enter certification title">*</span></label>
+            <input type="text" id="cert-title-0" name="certifications[0][title]" placeholder="e.g., AWS Certified Developer" required>
+            <label for="cert-issuer-0">Issuer</label>
+            <input type="text" id="cert-issuer-0" name="certifications[0][issuer]" placeholder="e.g., Amazon">
+            <label for="cert-date-0">Date</label>
+            <input type="date" id="cert-date-0" name="certifications[0][date]">
+            <button type="button" class="remove-entry" data-section="certifications">Remove</button>
+          </div>
+          <button type="button" id="add-certification">Add Certification</button>
+        </fieldset>
+
+        <!-- Languages -->
+        <fieldset id="languages-section">
+          <legend>Languages</legend>
+          <div class="language-entry">
+            <label for="language-0">Language <span title="Enter a language">*</span></label>
+            <input type="text" id="language-0" name="languages[0]" placeholder="e.g., English" required>
+            <button type="button" class="remove-entry" data-section="languages">Remove</button>
+          </div>
+          <button type="button" id="add-language">Add Language</button>
+        </fieldset>
+
+        <!-- Interests -->
+        <fieldset id="interests-section">
+          <legend>Interests/Hobbies</legend>
+          <div class="interest-entry">
+            <label for="interest-0">Interest <span title="Enter an interest or hobby">*</span></label>
+            <input type="text" id="interest-0" name="interests[0]" placeholder="e.g., Hiking" required>
+            <button type="button" class="remove-entry" data-section="interests">Remove</button>
+          </div>
+          <button type="button" id="add-interest">Add Interest</button>
+        </fieldset>
+
+        <button type="button" id="preview-btn">Preview</button>
+      </form>
+
+      <!-- Live Preview -->
+      <div id="preview">
+        <h2>Resume Preview</h2>
+        <div id="preview-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Dynamic Add/Remove Functionality
+    function addEntry(section, template) {
+      const sectionEl = document.getElementById(`${section}-section`);
+      const entries = sectionEl.querySelectorAll(`.${section}-entry`).length;
+      const newEntry = document.createElement('div');
+      newEntry.className = `${section}-entry`;
+      newEntry.innerHTML = template.replace(/-\d+/g, `-${entries}`).replace(/\[0\]/g, `[${entries}]`);
+      sectionEl.insertBefore(newEntry, sectionEl.lastElementChild);
+    }
+  
+    function removeEntry(event) {
+      const section = event.target.dataset.section;
+      const entry = event.target.parentElement;
+      if (document.querySelectorAll(`.${section}-entry`).length > 1) {
+        entry.remove();
+      }
+    }
+  
+    // Templates for each section
+    const educationTemplate = `
+      <label for="institution-0">Institution *</label>
+      <input type="text" id="institution-0" name="education[0][institution]" placeholder="e.g., XYZ University" required>
+      <label for="degree-0">Degree</label>
+      <input type="text" id="degree-0" name="education[0][degree]" placeholder="e.g., B.S. Computer Science">
+      <label for="year-0">Year</label>
+      <input type="number" id="year-0" name="education[0][year]" placeholder="e.g., 2023">
+      <label for="cgpa-0">CGPA</label>
+      <input type="number" id="cgpa-0" name="education[0][cgpa]" step="0.01" placeholder="e.g., 3.8">
+      <button type="button" class="remove-entry" data-section="education">Remove</button>
+    `;
+  
+    const experienceTemplate = `
+      <label for="company-0">Company *</label>
+      <input type="text" id="company-0" name="experience[0][company]" placeholder="e.g., ABC Corp" required>
+      <label for="role-0">Role</label>
+      <input type="text" id="role-0" name="experience[0][role]" placeholder="e.g., Software Engineer">
+      <label for="duration-0">Duration</label>
+      <input type="text" id="duration-0" name="experience[0][duration]" placeholder="e.g., Jan 2022 - Present">
+      <label for="responsibilities-0">Responsibilities</label>
+      <textarea id="responsibilities-0" name="experience[0][responsibilities]" placeholder="e.g., Developed web applications..."></textarea>
+      <button type="button" class="remove-entry" data-section="experience">Remove</button>
+    `;
+  
+    const projectTemplate = `
+      <label for="project-title-0">Title *</label>
+      <input type="text" id="project-title-0" name="projects[0][title]" placeholder="e.g., E-commerce Platform" required>
+      <label for="project-desc-0">Description</label>
+      <textarea id="project-desc-0" name="projects[0][description]" placeholder="e.g., Built a full-stack application..."></textarea>
+      <label for="project-tech-0">Tech Stack</label>
+      <input type="text" id="project-tech-0" name="projects[0][tech]" placeholder="e.g., React, Node.js, MongoDB">
+      <label for="project-link-0">GitHub Link</label>
+      <input type="url" id="project-link-0" name="projects[0][link]" placeholder="e.g., https://github.com/...">
+      <button type="button" class="remove-entry" data-section="projects">Remove</button>
+    `;
+  
+    const skillTemplate = `
+      <label for="skill-0">Skill *</label>
+      <input type="text" id="skill-0" name="skills[0]" placeholder="e.g., JavaScript" required>
+      <button type="button" class="remove-entry" data-section="skills">Remove</button>
+    `;
+  
+    const certificationTemplate = `
+      <label for="cert-title-0">Title *</label>
+      <input type="text" id="cert-title-0" name="certifications[0][title]" placeholder="e.g., AWS Certified Developer" required>
+      <label for="cert-issuer-0">Issuer</label>
+      <input type="text" id="cert-issuer-0" name="certifications[0][issuer]" placeholder="e.g., Amazon">
+      <label for="cert-date-0">Date</label>
+      <input type="date" id="cert-date-0" name="certifications[0][date]">
+      <button type="button" class="remove-entry" data-section="certifications">Remove</button>
+    `;
+  
+    const languageTemplate = `
+      <label for="language-0">Language *</label>
+      <input type="text" id="language-0" name="languages[0]" placeholder="e.g., English" required>
+      <button type="button" class="remove-entry" data-section="languages">Remove</button>
+    `;
+  
+    const interestTemplate = `
+      <label for="interest-0">Interest *</label>
+      <input type="text" id="interest-0" name="interests[0]" placeholder="e.g., Hiking" required>
+      <button type="button" class="remove-entry" data-section="interests">Remove</button>
+    `;
+  
+    // Event Listeners for Add Buttons (Ensured DOM is ready)
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('add-education').addEventListener('click', () => addEntry('education', educationTemplate));
+      document.getElementById('add-experience').addEventListener('click', () => addEntry('experience', experienceTemplate));
+      document.getElementById('add-project').addEventListener('click', () => addEntry('projects', projectTemplate));
+      document.getElementById('add-skill').addEventListener('click', () => addEntry('skills', skillTemplate));
+      document.getElementById('add-certification').addEventListener('click', () => addEntry('certifications', certificationTemplate));
+      document.getElementById('add-language').addEventListener('click', () => addEntry('languages', languageTemplate));
+      document.getElementById('add-interest').addEventListener('click', () => addEntry('interests', interestTemplate));
+    });
+  
+    // Event Delegation for Remove Buttons
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('remove-entry')) {
+        removeEntry(e);
+      }
+    });
+  
+    // Real-Time and Button Preview
+    const form = document.getElementById('resume-form');
+    const previewContent = document.getElementById('preview-content');
+  
+    function updatePreview() {
+      const formData = new FormData(form);
+      let previewHtml = '';
+  
+      // Personal Info and Contact
+      const name = formData.get('name') || 'Your Name';
+      const email = formData.get('email') || '';
+      const phone = formData.get('phone') || '';
+      const linkedin = formData.get('linkedin') || '';
+      const github = formData.get('github') || '';
+      previewHtml += `
+        <h1>${name}</h1>
+        <p>${phone ? `+${phone} ` : ''}${email ? `${email} ` : ''}${linkedin ? linkedin : ''}${github ? ` ${github}` : ''}</p>
+      `;
+  
+      // Summary
+      const objective = formData.get('objective') || '';
+      if (objective) {
+        previewHtml += '<h2>SUMMARY</h2><p>' + objective + '</p>';
+      }
+  
+      // Skills
+      const skills = formData.getAll('skills').filter(skill => skill);
+      if (skills.length > 0) {
+        previewHtml += '<h2>SKILLS</h2><ul><li>' + skills.join('</li><li>') + '</li></ul>';
+      }
+  
+      // Experience
+      const experience = [];
+      formData.forEach((value, key) => {
+        if (key.startsWith('experience')) {
+          const match = key.match(/experience\[(\d+)\]\[(\w+)\]/);
+          if (match) {
+            const index = match[1];
+            const field = match[2];
+            experience[index] = experience[index] || {};
+            experience[index][field] = value;
+          }
+        }
+      });
+      if (experience.some(exp => exp && exp.company)) {
+        previewHtml += '<h2>EXPERIENCE</h2>';
+        experience.forEach((exp, i) => {
+          if (exp && exp.company) {
+            previewHtml += `<p><strong>${exp.company}</strong> | ${exp.role || ''}<br>${exp.duration || ''}<br>${exp.responsibilities || ''}</p>`;
+          }
+        });
+      }
+  
+      // Projects
+      const projects = [];
+      formData.forEach((value, key) => {
+        if (key.startsWith('projects')) {
+          const match = key.match(/projects\[(\d+)\]\[(\w+)\]/);
+          if (match) {
+            const index = match[1];
+            const field = match[2];
+            projects[index] = projects[index] || {};
+            projects[index][field] = value;
+          }
+        }
+      });
+      if (projects.some(proj => proj && proj.title)) {
+        previewHtml += '<h2>PROJECTS</h2>';
+        projects.forEach((proj, i) => {
+          if (proj && proj.title) {
+            previewHtml += `<p><strong>${proj.title}</strong><br>${proj.description || ''}<br>Tech: ${proj.tech || ''}${proj.link ? ` GitHub: ${proj.link}` : ''}</p>`;
+          }
+        });
+      }
+  
+      // Education
+      const education = [];
+      formData.forEach((value, key) => {
+        if (key.startsWith('education')) {
+          const match = key.match(/education\[(\d+)\]\[(\w+)\]/);
+          if (match) {
+            const index = match[1];
+            const field = match[2];
+            education[index] = education[index] || {};
+            education[index][field] = value;
+          }
+        }
+      });
+      if (education.some(edu => edu && edu.institution)) {
+        previewHtml += '<h2>EDUCATION AND TRAINING</h2>';
+        education.forEach((edu, i) => {
+          if (edu && edu.institution) {
+            previewHtml += `<p><strong>${edu.institution}</strong><br>${edu.degree || ''}${edu.year ? `, ${edu.year}` : ''}${edu.cgpa ? `, CGPA: ${edu.cgpa}` : ''}</p>`;
+          }
+        });
+      }
+  
+      // Languages
+      const languages = formData.getAll('languages').filter(lang => lang);
+      if (languages.length > 0) {
+        previewHtml += '<h2>LANGUAGES</h2><p>' + languages.join(', ') + '</p>';
+      }
+  
+      previewContent.innerHTML = previewHtml || '<p>Fill in the form to see your resume preview.</p>';
+    }
+  
+    // Bind real-time updates
+    document.addEventListener('DOMContentLoaded', () => {
+      form.addEventListener('input', updatePreview);
+      form.addEventListener('change', updatePreview);
+      document.getElementById('preview-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        updatePreview();
+        console.log('Preview button clicked');
+      });
+    });
+  </script>
+</body>
+</html>
